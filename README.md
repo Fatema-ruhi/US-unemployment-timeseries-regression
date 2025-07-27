@@ -1,4 +1,4 @@
-# *A Statistical Analysis of Unemployment Rate in the United States of America Using The Time-Series Method*
+# **A Statistical Analysis of Unemployment Rate in the United States of America Using The Time-Series Method**
 ### 🎯 **Objective**
 To build a time-series regression model that accurately predicts U.S. unemployment rates while evaluating the **impact of COVID-19** using historical monthly data from **January 1948 to October 2021**.
 
