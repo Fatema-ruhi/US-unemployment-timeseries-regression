@@ -1,8 +1,8 @@
 # **A Statistical Analysis of Unemployment Rate in the United States of America Using The Time-Series Method**
-### 🎯 **Objective**
+### **Objective**
 To build a time-series regression model that accurately predicts U.S. unemployment rates while evaluating the **impact of COVID-19** using historical monthly data from **January 1948 to October 2021**.
 
-### 📦 **Dataset**
+### **Dataset**
 
 * **Source**: [FRED: UNRATE](https://fred.stlouisfed.org/series/UNRATE)
 * **Observations**: 862
@@ -13,7 +13,7 @@ To build a time-series regression model that accurately predicts U.S. unemployme
   * `x25`: COVID-19 Public Health Emergency (binary)
   * `x26`: COVID-19 Pandemic Declaration (binary)
   
-### 🔬 **Methodology**
+### **Methodology**
 
 1. **Model 1**:
 
@@ -41,7 +41,7 @@ To build a time-series regression model that accurately predicts U.S. unemployme
      \text{Unemployment} = \beta_0 + \beta_1 \text{lag}_1 + \beta_2 \text{lag}_2 + \beta_3 \text{covid} + \beta_4 (\text{lag}_1 \times \text{covid})
      $$
 
-### 📈 **Predictions**
+### **Predictions**
 
 Using the final model, predicted unemployment for the **next 3 months**:
 
@@ -57,14 +57,14 @@ Using the final model, predicted unemployment for the **next 3 months**:
 - Leverage Points
 - Cook’s Distance
 
-### ✅ **Key Takeaways**
+### **Key Takeaways**
 
 * Lagged unemployment rates are **strong predictors** of future values.
 * The **COVID-19 health emergency significantly impacted unemployment**, as captured by interaction terms.
 * **Model 3** is the best model in terms of adjusted R², residual error, and statistical significance.
 * Standardization and outlier removal **enhanced prediction accuracy** and reduced multicollinearity.
 
-### 📚 **Tools Used**
+### **Tools Used**
 
 * **R** programming language
 * Regression diagnostics: residuals, leverage, Cook’s distance
