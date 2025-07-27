@@ -52,7 +52,7 @@ Using the final model, predicted unemployment for the **next 3 months**:
 | 3     | 5.25%          | \[4.85%, 5.64%]         |
 
 ## Visualizations
-- Residuals vs. Fitted 
+- Residuals vs. Fitted
 - Studentized Residuals
 - Leverage Points
 - Cook’s Distance
