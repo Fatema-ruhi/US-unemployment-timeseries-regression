@@ -1,90 +1,72 @@
-# US-unemployment-timeseries-regression
-This project predicts the U.S. unemployment rate using time series regression and investigates the impact of the COVID-19 pandemic on job loss trends.
-us-unemployment-timeseries-regression/
-│
-├── README.md
-├── data/
-│   └── UNRATE.csv
-├── scripts/
-│   ├── 01_data_preparation.R
-│   ├── 02_modeling.R
-│   ├── 03_diagnostics_visuals.R
-│   ├── 04_predictions.R
-├── visuals/
-│   ├── plot_residuals.png
-│   ├── plot_studentized.png
-│   ├── plot_leverage.png
-│   ├── plot_cooks_distance.png
-│   └── plot_prediction_intervals.png
-├── models/
-│   └── mod_1_summary.txt
-│   └── mod_2_summary.txt
-│   └── mod_3_summary.txt
-└── report/
-    └── Applied_Regression_Analysis_Graduate_Project_Ruhi.pdf
+# *A Statistical Analysis of Unemployment Rate in the United States of America Using The Time-Series Method*
+### 🎯 **Objective**
+To build a time-series regression model that accurately predicts U.S. unemployment rates while evaluating the **impact of COVID-19** using historical monthly data from **January 1948 to October 2021**.
 
-# US Unemployment Time-Series Regression Analysis
+### 📦 **Dataset**
 
-This project predicts the U.S. unemployment rate using time series regression and investigates the impact of the COVID-19 pandemic on job loss trends.
+* **Source**: [FRED: UNRATE](https://fred.stlouisfed.org/series/UNRATE)
+* **Observations**: 862
+* **Variables**:
 
-## 📊 Dataset
-- Source: [FRED UNRATE](https://fred.stlouisfed.org/series/UNRATE)
-- Time Span: Jan 1948 – Oct 2021
-- Frequency: Monthly
+  * `y_t`: Unemployment rate
+  * `x1–x24`: Lagged unemployment rates (lag-1 to lag-24)
+  * `x25`: COVID-19 Public Health Emergency (binary)
+  * `x26`: COVID-19 Pandemic Declaration (binary)
+  
+### 🔬 **Methodology**
 
-## 🔍 Objectives
-- Fit time-series regression models with 24 lags
-- Add dummy variables to represent COVID-19 public health emergency and pandemic
-- Compare multiple regression models
-- Predict unemployment rates for 3 future months
+1. **Model 1**:
 
-## 🧪 Models
-- **Model 1**: Full regression with 26 predictors
-- **Model 2**: Scaled predictors + interaction term
-- **Model 3**: Final model with reduced variables and outlier removal
+   * Full model using 24 lagged predictors + 2 COVID dummies
+   * Found high multicollinearity among lag predictors (VIF > 10)
+   * Adjusted R² = **93.85%**
 
-## 📈 Visualizations
-- Residuals vs. Fitted
+2. **Model 2**:
+
+   * Standardized lag variables
+   * Added interaction between lag-1 and COVID (x1\_1 × x25)
+   * All variables statistically significant
+   * Adjusted R² = **94.91%**
+   * Reduced multicollinearity
+
+3. **Model 3** (Final Model):
+
+   * Removed influential outliers (33 points)
+   * Focused on 4 key predictors: `lag_1`, `lag_2`, `covid`, `interaction`
+   * Adjusted R² = **98.63%**
+   * Residual standard error: **0.1929**
+   * Final equation:
+
+     $$
+     \text{Unemployment} = \beta_0 + \beta_1 \text{lag}_1 + \beta_2 \text{lag}_2 + \beta_3 \text{covid} + \beta_4 (\text{lag}_1 \times \text{covid})
+     $$
+
+### 📈 **Predictions**
+
+Using the final model, predicted unemployment for the **next 3 months**:
+
+| Month | Predicted Rate | 95% Confidence Interval |
+| ----- | -------------- | ----------------------- |
+| 1     | 4.79%          | \[4.39%, 5.19%]         |
+| 2     | 4.92%          | \[4.52%, 5.32%]         |
+| 3     | 5.25%          | \[4.85%, 5.64%]         |
+
+## Visualizations
+- Residuals vs. Fitted 
 - Studentized Residuals
 - Leverage Points
 - Cook’s Distance
-- Confidence Intervals for Forecasts
 
-## 📦 How to Run
-Make sure R is installed. Run the scripts in order:
+### ✅ **Key Takeaways**
 
-```bash
-Rscript scripts/01_data_preparation.R
-Rscript scripts/02_modeling.R
-Rscript scripts/03_diagnostics_visuals.R
-Rscript scripts/04_predictions.R
+* Lagged unemployment rates are **strong predictors** of future values.
+* The **COVID-19 health emergency significantly impacted unemployment**, as captured by interaction terms.
+* **Model 3** is the best model in terms of adjusted R², residual error, and statistical significance.
+* Standardization and outlier removal **enhanced prediction accuracy** and reduced multicollinearity.
 
+### 📚 **Tools Used**
 
-
----
-
-### ✅ Sample Data Visuals
-You'll have 5 visuals from the paper:
-1. Residuals vs Fitted Values (`plot_residuals.png`)
-2. Standardized Residuals (`plot_studentized.png`)
-3. Leverage Plot (`plot_leverage.png`)
-4. Cook’s Distance (`plot_cooks_distance.png`)
-5. Prediction Intervals (`plot_prediction_intervals.png`)
-
----
-
-### ✅ Code Scripts
-I'll extract and rewrite the R code from your appendix into clean, modular scripts under the `/scripts` folder:
-- `01_data_preparation.R`: Reads and lags data, creates dummy variables
-- `02_modeling.R`: Builds Model 1, 2, 3 and stores summaries
-- `03_diagnostics_visuals.R`: Generates the 5 diagnostic plots
-- `04_predictions.R`: Predicts unemployment for the next 3 months
-
----
-
-### ✅ Next Steps
-Would you like me to:
-1. Generate all the R code files for this structure?
-2. Create a ZIP of the full GitHub-ready folder?
-3. Optionally, help you push it directly to your GitHub account?
-
+* **R** programming language
+* Regression diagnostics: residuals, leverage, Cook’s distance
+* VIF for multicollinearity
+* Prediction intervals
