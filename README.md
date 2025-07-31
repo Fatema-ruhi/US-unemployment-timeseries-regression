@@ -53,7 +53,9 @@ Using the final model, predicted unemployment for the **next 3 months**:
 
 ## Visualizations
 - Residuals vs. Fitted
-![](https://github.com/Fatema-ruhi/US-unemployment-timeseries-regression/Residuals vs Fitted Values.PNG)
+
+![pic 1](https://github.com/Fatema-ruhi/US-unemployment-timeseries-regression/Residuals vs Fitted Values.PNG)
+
 - Studentized Residuals
 - Leverage Points
 - Cook’s Distance
