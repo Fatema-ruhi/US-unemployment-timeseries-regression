@@ -77,7 +77,7 @@ Using the final model, predicted unemployment for the **next 3 months**:
 
 ### **Tools Used**
 
-* **R** programming language
+* **R** programming language (https://github.com/Fatema-ruhi/US-unemployment-timeseries-regression/blob/09ab8ce5b41089bafee36d45a1ab5cd0819b9989/Graduate_Project_Ruhi.Rmd)
 * Regression diagnostics: residuals, leverage, Cook’s distance
 * VIF for multicollinearity
 * Prediction intervals
