@@ -1,0 +1,396 @@
+
+```{r echo=FALSE}
+#setwd("C:/Users/ethom/Downloads")
+xt <- read.csv("UNRATE.csv", header = TRUE)
+time <- data.frame(number = 1:nrow(xt), date = xt[,1])
+```
+
+```{r echo=FALSE}
+# COVID 19 Declared Public Health Emergency of International Concern on 30 January 2020
+# 1 = Public_Health_Emergency; 0 = Not Public_Health_Emergency
+x25 <- ifelse(time$number > 864, 1, 0)
+x25 <- x25[25:length(x25)]
+```
+
+```{r echo=FALSE}
+# COVID 19 Declared pandemic on 11 March 2020
+x26 <- ifelse(time$number > 867, 1, 0)
+x26 <- x26[25:length(x26)]
+```
+
+```{r warning=FALSE, include=FALSE}
+xt <- xt[,2]
+library(NTS)
+frm <- NNsetting(xt,nfore=0,lags=c(1:24))
+Predictors <- as.data.frame(frm$X)
+colnames(Predictors) <- paste("x", 1:ncol(Predictors), sep = "")
+y <- frm$y
+data_set<- cbind(y, Predictors, x25, x26)
+```
+
+```{r echo=FALSE}
+# First Model with 26 predictors and one response
+MOD <- lm(y~ ., data = data_set)
+summary(MOD)
+```
+
+```{r echo=FALSE}
+#checking the outliers of model-1
+data_set$fitted <- fitted.values(MOD)
+data_set$res <- residuals(MOD)
+data_set$stad <- rstandard(MOD)
+library(MASS)
+data_set$stud <- studres(MOD)
+data_set$lev <- hatvalues(MOD)
+data_set$cooks <- cooks.distance(MOD)
+```
+
+```{r echo=FALSE}
+#plot-1
+plot(data_set$fitted, data_set$res, xlab = "Fitted Values", ylab = "Residuals", pch = 19)
+abline(h=0)
+grid()
+```
+
+```{r echo=FALSE}
+#plot-2
+plot(abs(data_set$stad), xlab = "Observation", ylab = "Standardized Residuals", pch = 19)
+abline(h = 3, col = "darkred", lwd = 5)
+grid()
+```
+
+```{r echo=FALSE}
+#plot-3
+plot(abs(data_set$stud), xlab = "Observation", ylab = "Studentized Residuals", pch = 19)
+abline(h = 3, col = "darkred", lwd = 5)
+grid()
+```
+
+```{r echo=FALSE}
+#plot-4
+plot(data_set$lev, xlab = "Observation", ylab = "Leverage", pch = 19)
+k <- 26
+threshold <- ((3*k)+ 2)/nrow(data_set)
+abline(h = threshold, col = "darkred", lwd = 3)
+grid()
+```
+
+```{r echo=FALSE}
+#plot-5
+plot(data_set$cooks, xlab = "Observation", ylab = "Cook's Distance", pch = 19)
+threshold <- 3/nrow(data_set)
+abline(h = threshold, col = "darkgreen", lwd = 3)
+grid()
+```
+
+```{r warning=FALSE, include=FALSE}
+library(car)
+ref_VIF<- vif(MOD)
+ref_VIF
+```
+
+```{r echo=FALSE}
+#scaling the predictors of data set-1
+data_set$x1_1 <- scale(data_set$x1)
+data_set$x2_1 <- scale(data_set$x2)
+data_set$x3_1 <- scale(data_set$x3)
+data_set$x4_1 <- scale(data_set$x4)
+data_set$x5_1 <- scale(data_set$x5)
+data_set$x6_1 <- scale(data_set$x6)
+data_set$x7_1 <- scale(data_set$x7)
+data_set$x8_1 <- scale(data_set$x8)
+data_set$x9_1 <- scale(data_set$x9)
+data_set$x10_1 <- scale(data_set$x10)
+data_set$x11_1 <- scale(data_set$x11)
+data_set$x12_1 <- scale(data_set$x12)
+data_set$x13_1 <- scale(data_set$x13)
+data_set$x14_1 <- scale(data_set$x14)
+data_set$x15_1 <- scale(data_set$x15)
+data_set$x16_1 <- scale(data_set$x16)
+data_set$x17_1 <- scale(data_set$x17)
+data_set$x18_1 <- scale(data_set$x18)
+data_set$x19_1 <- scale(data_set$x19)
+data_set$x20_1 <- scale(data_set$x20)
+data_set$x21_1 <- scale(data_set$x21)
+data_set$x22_1 <- scale(data_set$x22)
+data_set$x23_1 <- scale(data_set$x23)
+data_set$x24_1 <- scale(data_set$x24)
+```
+
+```{r echo=FALSE}
+#creating the model-2 based on scaled data set.
+MOD_2 <- lm(y~ x1_1 + x2_1 + x25 + x1_1*x25, data = data_set)
+summary (MOD_2)
+```
+
+```{r echo=FALSE}
+#95% confidence interval of model-2
+round(cbind(Estimate = coef(MOD_2), confint(MOD_2, level = 0.95)), 4)
+```
+
+```{r echo=FALSE}
+#plot-6
+#mod_2 res values
+data_set$stad1 <- rstandard(MOD_2)
+plot(abs(data_set$stad1), xlab = "Observation", ylab = "Standardized Residuals", , pch = 19)
+abline(h = 3, col = "darkred", lwd = 5)
+grid()
+```
+
+```{r echo=FALSE}
+VIF_2<- vif(MOD_2)
+VIF_2
+```
+
+```{r warning=FALSE, include=FALSE}
+#deleting the outlier points of model-2
+data_set$stad1 <- rstandard(MOD_2)
+library(tidyverse)
+data_set_2 <- data_set %>%
+filter(abs(stad1) <= 3)
+nrow(data_set_2)
+nrow(data_set)
+data_set_2[data_set_2$stad1 > 3, ]
+```
+
+```{r echo=FALSE}
+#without infulential points
+data_set_3 <- data.frame(unemp = data_set_2$y, covid = data_set_2$x25, 
+              lag_1 = data_set_2$x1_1, lag_2 = data_set_2$x2_1,
+              inter = data_set_2$x25*data_set_2$x1_1)
+MOD_3 <- lm(unemp ~ lag_1 + lag_2 + covid + inter, data = data_set_3)
+summary (MOD_3)
+```
+
+```{r echo=FALSE}
+ref_VIF_3<- vif(MOD_3)
+ref_VIF_3
+```
+
+```{r echo=FALSE}
+#95% Confidence interval for model-3
+round(cbind(Estimate = coef(MOD_3), confint(MOD_3, level = 0.95)), 4)
+```
+
+```{r echo=FALSE}
+# New value-1 were scaled values of the response variable for the last two periods
+new_x <- data.frame(lag_1 = -0.71036837, lag_2 = -0.58895120, covid = 1, inter = -0.71036837)
+prediction <- predict(MOD_3, newdata = new_x, interval = "predict", level = 0.95)
+prediction
+```
+
+```{r echo=FALSE}
+# New values-2 were scaled values of the response variable for the last two periods
+new_xx <- data.frame(lag_1 = -0.583089922, lag_2 = -0.347861883, covid = 1, inter = -0.583089922)
+prediction <- predict(MOD_3, newdata = new_xx, interval = "predict", level = 0.95)
+prediction
+```
+
+```{r echo=FALSE}
+# New values-3 were scaled values of the response variable for the last two periods
+new_xxx <- data.frame(lag_1 = -0.347861883, lag_2 = -0.230247863, covid = 1, inter = -0.347861883)
+prediction <- predict(MOD_3, newdata = new_xxx, interval = "predict", level = 0.95)
+prediction
+```
+
+```{r}
+#setwd("C:/Users/ethom/Downloads")
+xt <- read.csv("UNRATE.csv", header = TRUE)
+time <- data.frame(number = 1:nrow(xt), date = xt[,1])
+```
+
+```{r}
+# COVID 19 Declared Public Health Emergency of International Concern on 30 January 2020
+# 1 = Public_Health_Emergency; 0 = Not Public_Health_Emergency
+x25 <- ifelse(time$number > 864, 1, 0)
+x25 <- x25[25:length(x25)]
+```
+
+```{r}
+# COVID 19 Declared pandemic on 11 March 2020
+x26 <- ifelse(time$number > 867, 1, 0)
+x26 <- x26[25:length(x26)]
+```
+
+```{r warning=FALSE, include=FALSE}
+xt <- xt[,2]
+library(NTS)
+frm <- NNsetting(xt,nfore=0,lags=c(1:24))
+Predictors <- as.data.frame(frm$X)
+colnames(Predictors) <- paste("x", 1:ncol(Predictors), sep = "")
+y <- frm$y
+data_set<- cbind(y, Predictors, x25, x26)
+```
+
+```{r}
+# First Model with 26 predictors and one response
+MOD <- lm(y~ ., data = data_set)
+summary(MOD)
+```
+
+```{r}
+#checking the outliers of model-1
+data_set$fitted <- fitted.values(MOD)
+data_set$res <- residuals(MOD)
+data_set$stad <- rstandard(MOD)
+library(MASS)
+data_set$stud <- studres(MOD)
+data_set$lev <- hatvalues(MOD)
+data_set$cooks <- cooks.distance(MOD)
+```
+
+```{r}
+#plot-1
+plot(data_set$fitted, data_set$res, xlab = "Fitted Values", ylab = "Residuals", pch = 19)
+abline(h=0)
+grid()
+```
+
+```{r}
+#plot-2
+plot(abs(data_set$stad), xlab = "Observation", ylab = "Standardized Residuals", pch = 19)
+abline(h = 3, col = "darkred", lwd = 5)
+grid()
+```
+
+```{r}
+#plot-3
+plot(abs(data_set$stud), xlab = "Observation", ylab = "Studentized Residuals", pch = 19)
+abline(h = 3, col = "darkred", lwd = 5)
+grid()
+```
+
+```{r}
+#plot-4
+plot(data_set$lev, xlab = "Observation", ylab = "Leverage", pch = 19)
+k <- 26
+threshold <- ((3*k)+ 2)/nrow(data_set)
+abline(h = threshold, col = "darkred", lwd = 3)
+grid()
+```
+
+```{r}
+#plot-4
+plot(data_set$lev, xlab = "Observation", ylab = "Leverage", pch = 19)
+k <- 26
+threshold <- ((3*k)+ 2)/nrow(data_set)
+abline(h = threshold, col = "darkred", lwd = 3)
+grid()
+```
+
+```{r}
+#plot-5
+plot(data_set$cooks, xlab = "Observation", ylab = "Cook's Distance", pch = 19)
+threshold <- 3/nrow(data_set)
+abline(h = threshold, col = "darkgreen", lwd = 3)
+grid()
+```
+
+```{r warning=FALSE, include=FALSE}
+library(car)
+ref_VIF<- vif(MOD)
+ref_VIF
+```
+
+```{r}
+#scaling the predictors of data set-1
+data_set$x1_1 <- scale(data_set$x1)
+data_set$x2_1 <- scale(data_set$x2)
+data_set$x3_1 <- scale(data_set$x3)
+data_set$x4_1 <- scale(data_set$x4)
+data_set$x5_1 <- scale(data_set$x5)
+data_set$x6_1 <- scale(data_set$x6)
+data_set$x7_1 <- scale(data_set$x7)
+data_set$x8_1 <- scale(data_set$x8)
+data_set$x9_1 <- scale(data_set$x9)
+data_set$x10_1 <- scale(data_set$x10)
+data_set$x11_1 <- scale(data_set$x11)
+data_set$x12_1 <- scale(data_set$x12)
+data_set$x13_1 <- scale(data_set$x13)
+data_set$x14_1 <- scale(data_set$x14)
+data_set$x15_1 <- scale(data_set$x15)
+data_set$x16_1 <- scale(data_set$x16)
+data_set$x17_1 <- scale(data_set$x17)
+data_set$x18_1 <- scale(data_set$x18)
+data_set$x19_1 <- scale(data_set$x19)
+data_set$x20_1 <- scale(data_set$x20)
+data_set$x21_1 <- scale(data_set$x21)
+data_set$x22_1 <- scale(data_set$x22)
+data_set$x23_1 <- scale(data_set$x23)
+data_set$x24_1 <- scale(data_set$x24)
+```
+
+```{r}
+#creating the model-2 based on scaled data set.
+MOD_2 <- lm(y~ x1_1 + x2_1 + x25 + x1_1*x25, data = data_set)
+summary (MOD_2)
+```
+
+```{r}
+#95% confidence interval of model-2
+round(cbind(Estimate = coef(MOD_2), confint(MOD_2, level = 0.95)), 4)
+```
+
+```{r}
+#plot-6
+#model-2 residual values
+data_set$stad1 <- rstandard(MOD_2)
+plot(abs(data_set$stad1), xlab = "Observation", ylab = "Standardized Residuals", , pch = 19)
+abline(h = 3, col = "darkred", lwd = 5)
+grid()
+```
+
+```{r}
+VIF_2<- vif(MOD_2)
+VIF_2
+```
+
+```{r warning=FALSE, include=FALSE}
+#deleting the outlier points of model-2
+data_set$stad1 <- rstandard(MOD_2)
+library(tidyverse)
+data_set_2 <- data_set %>%
+filter(abs(stad1) <= 3)
+nrow(data_set_2)
+nrow(data_set)
+data_set_2[data_set_2$stad1 > 3, ]
+```
+
+
+```{r}
+#creating model-3 without influential points.
+data_set_3 <- data.frame(unemp = data_set_2$y, covid = data_set_2$x25, 
+              lag_1 = data_set_2$x1_1, lag_2 = data_set_2$x2_1,
+              inter = data_set_2$x25*data_set_2$x1_1)
+MOD_3 <- lm(unemp ~ lag_1 + lag_2 + covid + inter, data = data_set_3)
+summary (MOD_3)
+```
+
+```{r}
+#checking the multicollinearity of model-3
+ref_VIF_3<- vif(MOD_3)
+ref_VIF_3
+```
+
+```{r}
+#95% Confidence interval for model-3
+round(cbind(Estimate = coef(MOD_3), confint(MOD_3, level = 0.95)), 4)
+```
+
+```{r}
+# New value-1 were scaled values of the response variable for the last two periods
+new_x <- data.frame(lag_1 = -0.71036837, lag_2 = -0.58895120, covid = 1, inter = -0.71036837)
+prediction <- predict(MOD_3, newdata = new_x, interval = "predict", level = 0.95)
+prediction
+
+# New values-2 were scaled values of the response variable for the last two periods
+new_xx <- data.frame(lag_1 = -0.583089922, lag_2 = -0.347861883, covid = 1, inter = -0.583089922)
+prediction <- predict(MOD_3, newdata = new_xx, interval = "predict", level = 0.95)
+prediction
+
+# New values-3 were scaled values of the response variable for the last two periods
+new_xxx <- data.frame(lag_1 = -0.347861883, lag_2 = -0.230247863, covid = 1, inter = -0.347861883)
+prediction <- predict(MOD_3, newdata = new_xxx, interval = "predict", level = 0.95)
+prediction
+```
+
